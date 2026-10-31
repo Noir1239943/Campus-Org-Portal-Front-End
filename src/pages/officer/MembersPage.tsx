@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Download, Pencil, Search, UserMinus, UserPlus, Users } from 'lucide-react'
+import { Crown, Download, Lock, Pencil, Search, UserMinus, UserPlus, Users } from 'lucide-react'
 import { toast } from 'sonner'
 import { downloadFile, getErrorMessage } from '@/api/client'
 import { officerApi } from '@/api/officer'
@@ -137,7 +137,10 @@ export default function MembersPage() {
                       </div>
                     </td>
                     <td className="px-3 py-3">
-                      <span className="text-slate-700">{m.position}</span>
+                      <span className="inline-flex items-center gap-1 text-slate-700">
+                        {m.is_president && <Crown className="size-3.5 text-amber-500" aria-label="President" />}
+                        {m.position}
+                      </span>
                       {m.is_officer && <Badge tone="violet" className="ml-2">Officer</Badge>}
                     </td>
                     <td className="px-3 py-3 text-xs text-slate-500">{formatDate(m.joined_at)}</td>
@@ -151,6 +154,11 @@ export default function MembersPage() {
                       <Badge tone={m.status === 'at_risk' ? 'amber' : 'green'}>{m.status === 'at_risk' ? 'At risk' : 'Active'}</Badge>
                     </td>
                     <td className="px-5 py-3">
+                      {m.is_president ? (
+                        <p className="flex items-center justify-end gap-1.5 text-xs text-slate-500">
+                          <Lock className="size-3.5" /> Managed by OSA
+                        </p>
+                      ) : (
                       <div className="flex justify-end gap-1">
                         <Button
                           size="icon"
@@ -175,6 +183,7 @@ export default function MembersPage() {
                           </Button>
                         )}
                       </div>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -203,7 +212,7 @@ export default function MembersPage() {
         }
       >
         <div className="space-y-4">
-          <Field label="Position" hint="e.g. Member, Secretary, Events Committee">
+          <Field label="Position" hint="e.g. Member, Secretary, Events Committee. Only the OSA can assign the President.">
             {(id) => <Input id={id} value={editForm.position} maxLength={60} onChange={(e) => setEditForm({ ...editForm, position: e.target.value })} />}
           </Field>
           <Checkbox

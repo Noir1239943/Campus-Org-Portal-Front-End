@@ -351,6 +351,7 @@ export interface MemberRow {
   user: UserBrief
   position: string
   is_officer: boolean
+  is_president: boolean
   joined_at: string | null
   events_expected: number
   events_attended: number
@@ -442,6 +443,7 @@ export interface AdviserOverview {
     events_next_30_days: number
     attendance_risks: number
     pending_event_approvals: number
+    pending_proposals: number
     probation: number
   }
   activity: { month: string; events: number; is_current: boolean }[]
@@ -452,6 +454,40 @@ export interface AdviserOverview {
   }
   organizations: OrgHealthRow[]
   alerts: { level: 'danger' | 'warning' | 'info'; title: string; message: string; link: string }[]
+}
+
+export type ProposalStatus = 'pending' | 'approved' | 'rejected' | 'withdrawn'
+
+export interface OrganizationProposal {
+  id: number
+  reference: string
+  name: string
+  acronym: string
+  category: string
+  description: string
+  purpose: string
+  planned_activities: string | null
+  adviser_name: string | null
+  expected_members: number | null
+  status: ProposalStatus
+  review_note: string | null
+  reviewed_at: string | null
+  created_at: string
+  proposer: UserBrief | null
+  reviewer: string | null
+  organization: OrgBrief | null
+}
+
+export interface OfficerRow {
+  membership_id: number
+  user_id: number
+  name: string
+  initials: string
+  id_number: string
+  email: string
+  program_label: string | null
+  position: string
+  is_president: boolean
 }
 
 export interface StudentLookupRow extends User {

@@ -8,17 +8,38 @@ import type {
   Clearance,
   Health,
   Organization,
+  OfficerRow,
   OrgHealthRow,
+  OrganizationProposal,
+  ProposalStatus,
   StudentLookupRow,
   User,
 } from '@/types'
 
 export type ApprovalTab = 'pending' | 'upcoming' | 'completed' | 'rejected'
 
+export interface OrganizationFormPayload {
+  name: string
+  acronym: string
+  category: string
+  tagline: string | null
+  description: string
+  about: string | null
+  color: string
+  adviser_name: string | null
+  contact_email: string | null
+  meeting_schedule: string | null
+  accepting_members: boolean
+  requires_all_students: boolean
+  capacity: number | null
+  /** Student ID number or email; only used when creating. */
+  president?: string
+}
+
 export interface AdviserOrganizationDetail {
   organization: Organization
   health: OrgHealthRow
-  officers: { name: string; initials: string; id_number: string; email: string; position: string }[]
+  officers: OfficerRow[]
   recent_events: CampusEvent[]
   upcoming_events: CampusEvent[]
 }
@@ -51,6 +72,28 @@ export const adviserApi = {
     api.get<AdviserOrganizationDetail>(`/adviser/organizations/${id}`).then((r) => r.data),
   updateOrganizationStatus: (id: number, payload: { status: string; note?: string }) =>
     api.patch<{ message: string }>(`/adviser/organizations/${id}/status`, payload).then((r) => r.data),
+
+  createOrganization: (payload: OrganizationFormPayload) =>
+    api.post<{ message: string; organization: Organization }>('/adviser/organizations', payload).then((r) => r.data),
+  updateOrganization: (id: number, payload: OrganizationFormPayload) =>
+    api.put<Organization>(`/adviser/organizations/${id}`, payload).then((r) => r.data),
+  addOfficer: (id: number, payload: { identifier: string; position: string }) =>
+    api.post<{ message: string; officers: OfficerRow[] }>(`/adviser/organizations/${id}/officers`, payload).then((r) => r.data),
+  updateOfficer: (id: number, membershipId: number, payload: { position: string; is_officer: boolean }) =>
+    api
+      .patch<{ message: string; officers: OfficerRow[] }>(`/adviser/organizations/${id}/officers/${membershipId}`, payload)
+      .then((r) => r.data),
+
+  proposals: (status: ProposalStatus | 'all') =>
+    api
+      .get<{ data: OrganizationProposal[]; counts: Record<'pending' | 'approved' | 'rejected' | 'all', number> }>('/adviser/proposals', {
+        params: { status },
+      })
+      .then((r) => r.data),
+  approveProposal: (id: number, note?: string) =>
+    api.post<OrganizationProposal>(`/adviser/proposals/${id}/approve`, { note }).then((r) => r.data),
+  rejectProposal: (id: number, note: string) =>
+    api.post<OrganizationProposal>(`/adviser/proposals/${id}/reject`, { note }).then((r) => r.data),
 
   events: (tab: ApprovalTab) =>
     api

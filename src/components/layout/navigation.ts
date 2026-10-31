@@ -8,6 +8,7 @@ import {
   FileText,
   GraduationCap,
   LayoutDashboard,
+  Lightbulb,
   Megaphone,
   QrCode,
   Settings2,
@@ -49,6 +50,7 @@ export const navigation: Record<Workspace, NavItem[]> = {
   adviser: [
     { label: 'Oversight', to: '/adviser', icon: LayoutDashboard, end: true },
     { label: 'Organizations', to: '/adviser/organizations', icon: Users },
+    { label: 'New org proposals', to: '/adviser/proposals', icon: Lightbulb },
     { label: 'Event approvals', to: '/adviser/events', icon: CalendarCheck2 },
     { label: 'Attendance', to: '/adviser/attendance', icon: ClipboardCheck },
     { label: 'Students', to: '/adviser/students', icon: GraduationCap },

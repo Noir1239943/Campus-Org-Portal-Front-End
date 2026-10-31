@@ -88,3 +88,14 @@
     animation: none;
   }
 }
+
+@keyframes auth-float {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(30px, -40px, 0) scale(1.15); }
+}
+
+@keyframes auth-slide {
+  0%, 4% { opacity: 0; transform: translateY(12px); }
+  10%, 28% { opacity: 1; transform: translateY(0); }
+  34%, 100% { opacity: 0; transform: translateY(-12px); }
+}

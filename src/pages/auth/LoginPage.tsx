@@ -10,12 +10,6 @@ import { useAuth } from '@/context/AuthContext'
 import { workspaceHome } from '@/context/workspace'
 import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 
-const demoAccounts = [
-  { label: 'Student', login: '2024-00145', hint: 'Kyla Mae Abellana · BSIT 3' },
-  { label: 'Officer', login: '2023-00089', hint: 'John Rey Ybañez · JITS President' },
-  { label: 'Adviser / OSA', login: 'osa@cpc.edu.ph', hint: 'Maricel Gabutero · OSA' },
-]
-
 export default function LoginPage() {
   useDocumentTitle('Log in')
   const { user, workspace, login } = useAuth()
@@ -54,10 +48,9 @@ export default function LoginPage() {
     <AuthLayout>
       <div className="w-full max-w-sm">
         <div className="flex flex-col items-center text-center">
-          <img src="/cpc-logo.png" alt="Cordova Public College seal" className="size-24 drop-shadow-sm" />
-          <p className="mt-4 text-[11px] font-semibold tracking-wider text-blue-600 uppercase">Cordova Public College</p>
-          <h1 className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">Sign in to Campus Organizations</h1>
-          <p className="mt-1.5 text-sm text-slate-500">Use your school ID number or your CPC email.</p>
+          <img src="/cpc-logo.png" alt="Cordova Public College seal" className="size-20 drop-shadow-sm lg:hidden" />
+          <h1 className="mt-4 text-2xl font-semibold tracking-tight text-slate-900 lg:mt-0">Welcome back</h1>
+          <p className="mt-1.5 text-sm text-slate-500">Sign in with your school ID number or CPC email.</p>
         </div>
 
         <form onSubmit={submit} className="mt-8 space-y-4" noValidate>
@@ -126,32 +119,14 @@ export default function LoginPage() {
           </Button>
         </form>
 
-        {import.meta.env.VITE_SHOW_DEMO_ACCOUNTS === 'true' && (
-          <div className="mt-8 rounded-xl border border-dashed border-slate-200 p-4">
-            <p className="text-xs font-semibold text-slate-700">Demo accounts</p>
-            <p className="mt-0.5 text-xs text-slate-500">
-              Password for all: <code className="rounded bg-slate-100 px-1 font-mono text-slate-700">password123</code>
-            </p>
-            <div className="mt-3 grid gap-2">
-              {demoAccounts.map((acc) => (
-                <button
-                  key={acc.login}
-                  type="button"
-                  onClick={() => setForm({ ...form, login: acc.login, password: 'password123' })}
-                  className="flex items-center justify-between rounded-lg px-3 py-2 text-left ring-1 ring-slate-200 hover:bg-slate-50"
-                >
-                  <span>
-                    <span className="block text-xs font-semibold text-slate-800">{acc.label}</span>
-                    <span className="block text-[11px] text-slate-500">{acc.hint}</span>
-                  </span>
-                  <span className="font-mono text-[11px] text-slate-500">{acc.login}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
+        <p className="mt-6 text-center text-sm text-slate-500">
+          Don't have an account?{' '}
+          <Link to="/register" className="font-medium text-blue-600 hover:text-blue-700">
+            Create an account
+          </Link>
+        </p>
 
-        <p className="mt-8 text-center text-xs text-slate-400">
+        <p className="mt-6 text-center text-xs text-slate-400">
           Having trouble? Visit the Office of Student Affairs with your school ID.
         </p>
       </div>

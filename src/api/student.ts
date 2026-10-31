@@ -7,8 +7,20 @@ import type {
   ClearancePage,
   Excuse,
   Organization,
+  OrganizationProposal,
   StudentDashboard,
 } from '@/types'
+
+export interface ProposalPayload {
+  name: string
+  acronym: string
+  category: string
+  description: string
+  purpose: string
+  planned_activities: string | null
+  adviser_name: string | null
+  expected_members: number | null
+}
 
 export interface OrganizationFilters {
   search?: string
@@ -64,6 +76,13 @@ export const studentApi = {
   application: (id: number | string) => api.get<Application>(`/applications/${id}`).then((r) => r.data),
 
   withdrawApplication: (id: number) => api.post<Application>(`/applications/${id}/withdraw`).then((r) => r.data),
+
+  /* New organization proposals */
+  proposals: () => api.get<OrganizationProposal[]>('/proposals').then((r) => r.data),
+
+  propose: (payload: ProposalPayload) => api.post<OrganizationProposal>('/proposals', payload).then((r) => r.data),
+
+  withdrawProposal: (id: number) => api.post<OrganizationProposal>(`/proposals/${id}/withdraw`).then((r) => r.data),
 
   /* Events */
   events: (scope: 'mine' | 'browse' | 'past', params: { search?: string; type?: string } = {}) =>

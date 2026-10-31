@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Bookmark, FileText, Search, SearchX } from 'lucide-react'
+import { Bookmark, FileText, Lightbulb, Search, SearchX } from 'lucide-react'
 import { toast } from 'sonner'
 import { getErrorMessage } from '@/api/client'
 import { studentApi } from '@/api/student'
@@ -47,9 +47,14 @@ export default function DiscoverPage() {
         title="Find your community"
         description={`Explore ${data?.total ?? 'all'} recognized student organizations at Cordova Public College — academic, cultural, service, sports and media.`}
         actions={
-          <Button variant="secondary" to="/applications" icon={<FileText className="size-4" />}>
-            My applications
-          </Button>
+          <>
+            <Button variant="secondary" to="/propose-organization" icon={<Lightbulb className="size-4" />}>
+              Start an organization
+            </Button>
+            <Button variant="secondary" to="/applications" icon={<FileText className="size-4" />}>
+              My applications
+            </Button>
+          </>
         }
       />
 

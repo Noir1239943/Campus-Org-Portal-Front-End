@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { ChevronRight, Search, Users } from 'lucide-react'
+import { ChevronRight, Lightbulb, Plus, Search, Users } from 'lucide-react'
 import { adviserApi } from '@/api/adviser'
 import { Badge } from '@/components/ui/Badge'
+import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
-import { EmptyState, ErrorState } from '@/components/ui/Feedback'
+import { Alert, EmptyState, ErrorState } from '@/components/ui/Feedback'
 import { Input } from '@/components/ui/Field'
 import { OrgMark, PageHeader, Pills } from '@/components/ui/Misc'
 import { useDebounce } from '@/hooks/useDebounce'
@@ -26,9 +27,36 @@ export default function AdviserOrganizationsPage() {
     placeholderData: (prev) => prev,
   })
 
+  const { data: overview } = useQuery({ queryKey: ['adviser', 'overview'], queryFn: adviserApi.overview })
+
   return (
     <>
-      <PageHeader eyebrow="Student affairs" title="Organizations" description="Every recognized organization with membership, activity and attendance health." />
+      <PageHeader
+        eyebrow="Student affairs"
+        title="Organizations"
+        description="Every recognized organization with membership, activity and attendance health."
+        actions={
+          <Button to="/adviser/organizations/new" icon={<Plus className="size-4" />}>
+            Create organization
+          </Button>
+        }
+      />
+
+      {!!overview?.stats.pending_proposals && (
+        <Alert
+          className="mb-4"
+          tone="info"
+          icon={<Lightbulb />}
+          title={`${overview.stats.pending_proposals} ${overview.stats.pending_proposals === 1 ? 'proposal' : 'proposals'} to start a new organization`}
+          action={
+            <Button size="sm" variant="secondary" to="/adviser/proposals">
+              Review
+            </Button>
+          }
+        >
+          Students are waiting for your decision.
+        </Alert>
+      )}
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <Pills

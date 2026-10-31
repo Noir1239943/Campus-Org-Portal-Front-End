@@ -8,6 +8,7 @@ import { HomeRedirect, RequireAuth, RequireWorkspace } from './guards'
 
 // Auth
 const LoginPage = lazy(() => import('@/pages/auth/LoginPage'))
+const RegisterPage = lazy(() => import('@/pages/auth/RegisterPage'))
 const ForgotPasswordPage = lazy(() => import('@/pages/auth/ForgotPasswordPage'))
 
 // Student
@@ -20,6 +21,7 @@ const EventsPage = lazy(() => import('@/pages/student/EventsPage'))
 const EventDetailPage = lazy(() => import('@/pages/student/EventDetailPage'))
 const ApplicationsPage = lazy(() => import('@/pages/student/ApplicationsPage'))
 const ApplicationDetailPage = lazy(() => import('@/pages/student/ApplicationDetailPage'))
+const ProposeOrganizationPage = lazy(() => import('@/pages/student/ProposeOrganizationPage'))
 const CheckInPage = lazy(() => import('@/pages/student/CheckInPage'))
 const ClearancePage = lazy(() => import('@/pages/student/ClearancePage'))
 const AnnouncementsPage = lazy(() => import('@/pages/student/AnnouncementsPage'))
@@ -40,6 +42,8 @@ const OrganizationSettingsPage = lazy(() => import('@/pages/officer/Organization
 const OversightPage = lazy(() => import('@/pages/adviser/OversightPage'))
 const AdviserOrganizationsPage = lazy(() => import('@/pages/adviser/OrganizationsPage'))
 const AdviserOrganizationDetailPage = lazy(() => import('@/pages/adviser/OrganizationDetailPage'))
+const OrganizationFormPage = lazy(() => import('@/pages/adviser/OrganizationFormPage'))
+const ProposalsPage = lazy(() => import('@/pages/adviser/ProposalsPage'))
 const EventApprovalsPage = lazy(() => import('@/pages/adviser/EventApprovalsPage'))
 const AdviserAttendancePage = lazy(() => import('@/pages/adviser/AttendancePage'))
 const StudentsPage = lazy(() => import('@/pages/adviser/StudentsPage'))
@@ -64,6 +68,7 @@ function Workspace({ name }: { name: 'student' | 'officer' | 'adviser' }) {
 
 const router = createBrowserRouter([
   { path: '/login', element: page(<LoginPage />) },
+  { path: '/register', element: page(<RegisterPage />) },
   { path: '/forgot-password', element: page(<ForgotPasswordPage />) },
   {
     path: '/',
@@ -87,6 +92,7 @@ const router = createBrowserRouter([
           { path: 'events/:id', element: page(<EventDetailPage />) },
           { path: 'applications', element: page(<ApplicationsPage />) },
           { path: 'applications/:id', element: page(<ApplicationDetailPage />) },
+          { path: 'propose-organization', element: page(<ProposeOrganizationPage />) },
           { path: 'check-in', element: page(<CheckInPage />) },
           { path: 'clearance', element: page(<ClearancePage />) },
           { path: 'announcements', element: page(<AnnouncementsPage />) },
@@ -117,7 +123,10 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: page(<OversightPage />) },
           { path: 'organizations', element: page(<AdviserOrganizationsPage />) },
+          { path: 'organizations/new', element: page(<OrganizationFormPage />) },
           { path: 'organizations/:id', element: page(<AdviserOrganizationDetailPage />) },
+          { path: 'organizations/:id/edit', element: page(<OrganizationFormPage />) },
+          { path: 'proposals', element: page(<ProposalsPage />) },
           { path: 'events', element: page(<EventApprovalsPage />) },
           { path: 'attendance', element: page(<AdviserAttendancePage />) },
           { path: 'students', element: page(<StudentsPage />) },

@@ -1,5 +1,5 @@
 import type { BadgeTone } from '@/components/ui/Badge'
-import type { ApplicationStatus, AttendanceStatus, EventDisplayStatus, ExcuseStatus, Health, OrgStatus } from '@/types'
+import type { ApplicationStatus, AttendanceStatus, EventDisplayStatus, ExcuseStatus, Health, OrgStatus, ProposalStatus } from '@/types'
 
 type StatusMeta = { label: string; tone: BadgeTone }
 
@@ -7,6 +7,13 @@ export const applicationStatus: Record<ApplicationStatus, StatusMeta> = {
   pending: { label: 'Under review', tone: 'amber' },
   approved: { label: 'Approved', tone: 'green' },
   rejected: { label: 'Not approved', tone: 'red' },
+  withdrawn: { label: 'Withdrawn', tone: 'gray' },
+}
+
+export const proposalStatus: Record<ProposalStatus, StatusMeta> = {
+  pending: { label: 'Waiting for OSA', tone: 'amber' },
+  approved: { label: 'Approved', tone: 'green' },
+  rejected: { label: 'Returned', tone: 'red' },
   withdrawn: { label: 'Withdrawn', tone: 'gray' },
 }
 
@@ -56,6 +63,10 @@ export const categoryTone: Record<string, BadgeTone> = {
   Sports: 'orange',
   Media: 'gray',
 }
+
+export const organizationCategories = ['Academic', 'Governance', 'Arts & Culture', 'Service', 'Sports', 'Media']
+
+export const officerPositions = ['President', 'Vice President', 'Secretary', 'Treasurer', 'Auditor', 'P.R.O.', 'Events Committee', 'Officer']
 
 export const excuseReasons: { value: string; label: string }[] = [
   { value: 'illness', label: 'Illness or medical appointment' },

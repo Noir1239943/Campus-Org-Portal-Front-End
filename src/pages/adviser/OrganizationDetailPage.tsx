@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { CalendarCheck2, CalendarDays, ChevronRight, Mail, Users } from 'lucide-react'
+import { CalendarCheck2, CalendarDays, ChevronRight, Mail, Pencil, Users } from 'lucide-react'
 import { toast } from 'sonner'
 import { adviserApi } from '@/api/adviser'
 import { getErrorMessage } from '@/api/client'
@@ -10,7 +10,8 @@ import { Button } from '@/components/ui/Button'
 import { Card, CardBody, CardHeader } from '@/components/ui/Card'
 import { EmptyState, ErrorState, PageLoader } from '@/components/ui/Feedback'
 import { Field, Select, Textarea } from '@/components/ui/Field'
-import { Avatar, DateTile, OrgMark, PageHeader } from '@/components/ui/Misc'
+import { OfficersCard } from '@/components/shared/OfficersCard'
+import { DateTile, OrgMark, PageHeader } from '@/components/ui/Misc'
 import { Modal } from '@/components/ui/Modal'
 import { StatCard } from '@/components/ui/StatCard'
 import { useDocumentTitle } from '@/hooks/useDocumentTitle'
@@ -60,6 +61,9 @@ export default function AdviserOrganizationDetailPage() {
           <>
             <Badge tone={orgStatus[org.status].tone}>{orgStatus[org.status].label}</Badge>
             <Badge tone={healthStatus[health.health].tone}>{healthStatus[health.health].label}</Badge>
+            <Button variant="secondary" to={`/adviser/organizations/${org.id}/edit`} icon={<Pencil className="size-4" />}>
+              Edit details
+            </Button>
             <Button
               variant="secondary"
               onClick={() => {
@@ -130,29 +134,7 @@ export default function AdviserOrganizationDetailPage() {
         </div>
 
         <div className="space-y-6">
-          <Card>
-            <CardHeader title="Officers" />
-            <CardBody className="space-y-3">
-              {officers.length ? (
-                officers.map((o) => (
-                  <div key={o.id_number} className="flex items-center gap-3">
-                    <Avatar initials={o.initials} name={o.name} size="sm" />
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-slate-800">{o.name}</p>
-                      <p className="text-xs text-slate-500">
-                        {o.position} · {o.id_number}
-                      </p>
-                    </div>
-                    <a href={`mailto:${o.email}`} className="text-slate-400 hover:text-blue-600" aria-label={`Email ${o.name}`}>
-                      <Mail className="size-4" />
-                    </a>
-                  </div>
-                ))
-              ) : (
-                <p className="text-sm text-slate-500">No officers assigned.</p>
-              )}
-            </CardBody>
-          </Card>
+          <OfficersCard organizationId={org.id} officers={officers} />
           <Card>
             <CardHeader title="About" />
             <CardBody>
