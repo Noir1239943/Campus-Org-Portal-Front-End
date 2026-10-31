@@ -8,7 +8,7 @@ const baseURL = `${(import.meta.env.VITE_API_URL || 'http://localhost:8000').rep
 export const api = axios.create({
   baseURL,
   headers: { Accept: 'application/json' },
-  timeout: 30000,
+  timeout: 70000,
 })
 
 api.interceptors.request.use((config) => {
