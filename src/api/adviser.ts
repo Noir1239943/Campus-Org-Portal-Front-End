@@ -1,6 +1,7 @@
 import { api } from './client'
 import type { AnnouncementPayload } from './officer'
 import type {
+  AccountRow,
   AdviserOverview,
   Announcement,
   AttendanceSummary,
@@ -17,6 +18,32 @@ import type {
 } from '@/types'
 
 export type ApprovalTab = 'pending' | 'upcoming' | 'completed' | 'rejected'
+
+export interface AccountFilters {
+  search?: string
+  role?: 'all' | 'student' | 'adviser'
+  status?: 'active' | 'disabled' | 'all'
+  page?: number
+}
+
+export interface AccountPayload {
+  role: 'student' | 'adviser'
+  id_number: string
+  first_name: string
+  last_name: string
+  email: string
+  program?: string
+  year_level?: number
+  section?: string
+  title?: string
+  /** Optional: leave blank to generate a temporary password. */
+  password?: string
+}
+
+export interface ImportResult {
+  created: number
+  skipped: { row: number; reason: string }[]
+}
 
 export interface OrganizationFormPayload {
   name: string
@@ -116,6 +143,32 @@ export const adviserApi = {
         },
       })
       .then((r) => r.data),
+
+  accounts: (params: AccountFilters) =>
+    api
+      .get<{ data: AccountRow[]; current_page: number; last_page: number; total: number }>('/adviser/accounts', {
+        params: {
+          search: params.search || undefined,
+          role: params.role && params.role !== 'all' ? params.role : undefined,
+          status: params.status && params.status !== 'active' ? params.status : undefined,
+          page: params.page && params.page > 1 ? params.page : undefined,
+        },
+      })
+      .then((r) => r.data),
+  createAccount: (payload: AccountPayload) =>
+    api.post<{ message: string; account: AccountRow; temporary_password: string }>('/adviser/accounts', payload).then((r) => r.data),
+  updateAccount: (id: number, payload: AccountPayload) =>
+    api.put<{ message: string; account: AccountRow }>(`/adviser/accounts/${id}`, payload).then((r) => r.data),
+  resetAccountPassword: (id: number) =>
+    api.post<{ message: string; temporary_password: string }>(`/adviser/accounts/${id}/reset-password`).then((r) => r.data),
+  disableAccount: (id: number) => api.post<{ message: string }>(`/adviser/accounts/${id}/disable`).then((r) => r.data),
+  enableAccount: (id: number) => api.post<{ message: string }>(`/adviser/accounts/${id}/enable`).then((r) => r.data),
+  importStudents: (file: File, temporaryPassword: string) => {
+    const body = new FormData()
+    body.append('file', file)
+    body.append('temporary_password', temporaryPassword)
+    return api.post<ImportResult>('/adviser/accounts/import', body).then((r) => r.data)
+  },
 
   students: (search: string) =>
     api.get<StudentLookupRow[]>('/adviser/students', { params: { search: search || undefined } }).then((r) => r.data),

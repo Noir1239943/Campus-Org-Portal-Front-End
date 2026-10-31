@@ -27,6 +27,11 @@ export function RequireAuth({ children }: { children: ReactNode }) {
     return <Navigate to={`/login?redirect=${redirect}`} replace />
   }
 
+  // Temporary passwords must be replaced before anything else can be used.
+  if (user.must_change_password && location.pathname !== '/profile') {
+    return <Navigate to="/profile" replace />
+  }
+
   return <>{children}</>
 }
 

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { Copy, GraduationCap, KeyRound, Search, ShieldAlert, ShieldCheck } from 'lucide-react'
+import { Copy, GraduationCap, KeyRound, Search, ShieldAlert, ShieldCheck, UserCog } from 'lucide-react'
 import { toast } from 'sonner'
 import { adviserApi } from '@/api/adviser'
 import { getErrorMessage } from '@/api/client'
@@ -110,7 +110,16 @@ export default function StudentsPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Student affairs" title="Students" description="Look up a student's participation and clearance, or help them get back into their account." />
+      <PageHeader
+        eyebrow="Student affairs"
+        title="Students"
+        description="Look up a student's participation and clearance, or help them get back into their account."
+        actions={
+          <Button variant="secondary" size="sm" to="/adviser/accounts" icon={<UserCog className="size-4" />}>
+            Manage accounts
+          </Button>
+        }
+      />
 
       <div className="relative max-w-md">
         <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-slate-400" />

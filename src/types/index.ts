@@ -12,12 +12,34 @@ export interface User {
   initials: string
   email: string
   role: Role
+  is_active: boolean
+  must_change_password: boolean
   program: string | null
   year_level: number | null
   section: string | null
   program_label: string | null
   phone: string | null
   title: string | null
+}
+
+/** A row on the OSA Accounts page. */
+export interface AccountRow {
+  id: number
+  id_number: string
+  name: string
+  first_name: string
+  last_name: string
+  email: string
+  role: Role
+  program: string | null
+  year_level: number | null
+  section: string | null
+  program_label: string | null
+  title: string | null
+  is_active: boolean
+  must_change_password: boolean
+  last_login_at: string | null
+  organizations_count: number
 }
 
 export interface UserBrief {

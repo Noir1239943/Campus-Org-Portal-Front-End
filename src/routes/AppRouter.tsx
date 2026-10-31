@@ -47,6 +47,7 @@ const ProposalsPage = lazy(() => import('@/pages/adviser/ProposalsPage'))
 const EventApprovalsPage = lazy(() => import('@/pages/adviser/EventApprovalsPage'))
 const AdviserAttendancePage = lazy(() => import('@/pages/adviser/AttendancePage'))
 const StudentsPage = lazy(() => import('@/pages/adviser/StudentsPage'))
+const AccountsPage = lazy(() => import('@/pages/adviser/AccountsPage'))
 const AdviserAnnouncementsPage = lazy(() => import('@/pages/adviser/AnnouncementsPage'))
 const ReportsPage = lazy(() => import('@/pages/adviser/ReportsPage'))
 
@@ -130,6 +131,7 @@ const router = createBrowserRouter([
           { path: 'events', element: page(<EventApprovalsPage />) },
           { path: 'attendance', element: page(<AdviserAttendancePage />) },
           { path: 'students', element: page(<StudentsPage />) },
+          { path: 'accounts', element: page(<AccountsPage />) },
           { path: 'announcements', element: page(<AdviserAnnouncementsPage />) },
           { path: 'reports', element: page(<ReportsPage />) },
         ],

@@ -14,7 +14,7 @@ import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 
 export default function ProfilePage() {
   useDocumentTitle('Profile')
-  const { user, setSession, officerOrganizations } = useAuth()
+  const { user, setSession, refresh, officerOrganizations } = useAuth()
   const [phone, setPhone] = useState(user?.phone ?? '')
   const [passwords, setPasswords] = useState({ current_password: '', password: '', password_confirmation: '' })
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -30,10 +30,12 @@ export default function ProfilePage() {
 
   const changePassword = useMutation({
     mutationFn: () => authApi.changePassword(passwords),
-    onSuccess: (res) => {
+    onSuccess: async (res) => {
       toast.success(res.message)
       setPasswords({ current_password: '', password: '', password_confirmation: '' })
       setErrors({})
+      // Clears must_change_password so the rest of the app unlocks.
+      await refresh()
     },
     onError: (e) => {
       setErrors(getFieldErrors(e))
@@ -51,6 +53,12 @@ export default function ProfilePage() {
   return (
     <>
       <PageHeader title="Profile & password" description="Your school record comes from the registrar. You can update your phone number and password here." />
+
+      {user.must_change_password && (
+        <Alert className="mb-6" tone="warning" icon={<KeyRound />} title="Please set a new password before continuing.">
+          You are using a temporary password from the Office of Student Affairs. Enter it below as your current password, then choose a new one.
+        </Alert>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-3">
         <Card>
