@@ -42,8 +42,7 @@ cp .env.example .env        # VITE_API_URL=http://localhost:8000
 npm run dev                 # http://localhost:5173
 ```
 
-Demo accounts (password `password123`): student `2024-00145`, officer `2023-00089`, OSA `osa@cpc.edu.ph`.
-Set `VITE_SHOW_DEMO_ACCOUNTS=true` to show quick-fill buttons on the login page.
+Demo accounts (password `password123`): student `2024-00145`, officer `0002`, OSA `Admin` (or `osa@cpc.edu.ph`).
 
 Other scripts: `npm run build` (type-check + production build) · `npm run preview` · `npm run lint`
 
