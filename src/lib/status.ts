@@ -52,7 +52,7 @@ export const healthStatus: Record<Health, StatusMeta> = {
 export const orgStatus: Record<OrgStatus, StatusMeta> = {
   active: { label: 'Good standing', tone: 'green' },
   probation: { label: 'Probation', tone: 'amber' },
-  inactive: { label: 'Inactive', tone: 'gray' },
+  inactive: { label: 'Archived', tone: 'gray' },
 }
 
 export const categoryTone: Record<string, BadgeTone> = {

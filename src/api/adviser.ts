@@ -39,6 +39,9 @@ export interface OrganizationFormPayload {
 export interface AdviserOrganizationDetail {
   organization: Organization
   health: OrgHealthRow
+  /** False when the organization has event or attendance history (archive it instead). */
+  can_delete: boolean
+  history: { events: number; attendance: number }
   officers: OfficerRow[]
   recent_events: CampusEvent[]
   upcoming_events: CampusEvent[]
@@ -77,6 +80,8 @@ export const adviserApi = {
     api.post<{ message: string; organization: Organization }>('/adviser/organizations', payload).then((r) => r.data),
   updateOrganization: (id: number, payload: OrganizationFormPayload) =>
     api.put<Organization>(`/adviser/organizations/${id}`, payload).then((r) => r.data),
+  deleteOrganization: (id: number, confirm: string) =>
+    api.delete<{ message: string }>(`/adviser/organizations/${id}`, { data: { confirm } }).then((r) => r.data),
   addOfficer: (id: number, payload: { identifier: string; position: string }) =>
     api.post<{ message: string; officers: OfficerRow[] }>(`/adviser/organizations/${id}/officers`, payload).then((r) => r.data),
   updateOfficer: (id: number, membershipId: number, payload: { position: string; is_officer: boolean }) =>

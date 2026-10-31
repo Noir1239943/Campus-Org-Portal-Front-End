@@ -1,15 +1,15 @@
 import { useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { CalendarCheck2, CalendarDays, ChevronRight, Mail, Pencil, Users } from 'lucide-react'
+import { Archive, CalendarCheck2, CalendarDays, ChevronRight, Mail, Pencil, Trash2, Users } from 'lucide-react'
 import { toast } from 'sonner'
 import { adviserApi } from '@/api/adviser'
 import { getErrorMessage } from '@/api/client'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Card, CardBody, CardHeader } from '@/components/ui/Card'
-import { EmptyState, ErrorState, PageLoader } from '@/components/ui/Feedback'
-import { Field, Select, Textarea } from '@/components/ui/Field'
+import { Alert, EmptyState, ErrorState, PageLoader } from '@/components/ui/Feedback'
+import { Field, Input, Select, Textarea } from '@/components/ui/Field'
 import { OfficersCard } from '@/components/shared/OfficersCard'
 import { DateTile, OrgMark, PageHeader } from '@/components/ui/Misc'
 import { Modal } from '@/components/ui/Modal'
@@ -20,9 +20,12 @@ import { eventStatus, healthStatus, orgStatus } from '@/lib/status'
 
 export default function AdviserOrganizationDetailPage() {
   const { id = '' } = useParams()
+  const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [statusOpen, setStatusOpen] = useState(false)
   const [statusForm, setStatusForm] = useState({ status: 'active', note: '' })
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [confirmText, setConfirmText] = useState('')
   const { data, isLoading, error, refetch } = useQuery({ queryKey: ['adviser', 'organization', id], queryFn: () => adviserApi.organization(id) })
   useDocumentTitle(data?.organization.name ?? 'Organization')
 
@@ -32,6 +35,26 @@ export default function AdviserOrganizationDetailPage() {
       toast.success(res.message)
       setStatusOpen(false)
       queryClient.invalidateQueries({ queryKey: ['adviser'] })
+    },
+    onError: (e) => toast.error(getErrorMessage(e)),
+  })
+
+  const setStatus = useMutation({
+    mutationFn: ({ status }: { status: string; message: string }) => adviserApi.updateOrganizationStatus(Number(id), { status }),
+    onSuccess: (_, { message }) => {
+      toast.success(message)
+      queryClient.invalidateQueries({ queryKey: ['adviser'] })
+    },
+    onError: (e) => toast.error(getErrorMessage(e)),
+  })
+
+  const remove = useMutation({
+    mutationFn: () => adviserApi.deleteOrganization(Number(id), confirmText.trim()),
+    onSuccess: (res) => {
+      toast.success(res.message)
+      setDeleteOpen(false)
+      queryClient.invalidateQueries({ queryKey: ['adviser'] })
+      navigate('/adviser/organizations')
     },
     onError: (e) => toast.error(getErrorMessage(e)),
   })
@@ -146,8 +169,81 @@ export default function AdviserOrganizationDetailPage() {
               )}
             </CardBody>
           </Card>
+
+          <Card className="border-red-200">
+            <CardHeader title="Danger zone" subtitle="Only the OSA can do this" />
+            <CardBody className="space-y-4">
+              {org.status === 'inactive' ? (
+                <Alert
+                  tone="warning"
+                  icon={<Archive />}
+                  title="Archived"
+                  action={
+                    <Button size="sm" variant="secondary" loading={setStatus.isPending} onClick={() => setStatus.mutate({ status: 'active', message: `${org.name} was restored.` })}>
+                      Restore
+                    </Button>
+                  }
+                >
+                  Hidden from students and officers. All history is kept.
+                </Alert>
+              ) : (
+                <div>
+                  <Button
+                    variant="danger"
+                    icon={<Archive className="size-4" />}
+                    loading={setStatus.isPending}
+                    onClick={() =>
+                      window.confirm(`Archive ${org.name}? It will be hidden from students and officers. History is kept and you can restore it any time.`) &&
+                      setStatus.mutate({ status: 'inactive', message: `${org.name} was archived.` })
+                    }
+                  >
+                    Archive organization
+                  </Button>
+                  <p className="mt-2 text-xs text-slate-500">Hidden from students and officers. Members, events and attendance are kept for reports, and you can restore it later.</p>
+                </div>
+              )}
+
+              <div className="border-t border-slate-100 pt-4">
+                <Button variant="danger" icon={<Trash2 className="size-4" />} disabled={!data.can_delete} onClick={() => setDeleteOpen(true)}>
+                  Delete permanently
+                </Button>
+                <p className="mt-2 text-xs text-slate-500">
+                  {data.can_delete
+                    ? 'Only possible because this organization was never used. This cannot be undone.'
+                    : `Has ${data.history.events} ${data.history.events === 1 ? 'event' : 'events'} and ${data.history.attendance} attendance ${data.history.attendance === 1 ? 'record' : 'records'} — archive instead.`}
+                </p>
+              </div>
+            </CardBody>
+          </Card>
         </div>
       </div>
+
+      <Modal
+        open={deleteOpen}
+        onClose={() => setDeleteOpen(false)}
+        title="Delete this organization permanently?"
+        description={`${org.name} and its members, applications and announcements will be removed. Members are notified.`}
+        size="sm"
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setDeleteOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              className="bg-red-600 text-white hover:bg-red-700"
+              loading={remove.isPending}
+              disabled={confirmText.trim().toLowerCase() !== org.acronym.toLowerCase()}
+              onClick={() => remove.mutate()}
+            >
+              Delete permanently
+            </Button>
+          </>
+        }
+      >
+        <Field label={`Type ${org.acronym} to confirm`} required>
+          {(fid) => <Input id={fid} value={confirmText} autoComplete="off" onChange={(e) => setConfirmText(e.target.value)} />}
+        </Field>
+      </Modal>
 
       <Modal
         open={statusOpen}
@@ -172,7 +268,7 @@ export default function AdviserOrganizationDetailPage() {
               <Select id={fid} value={statusForm.status} onChange={(e) => setStatusForm({ ...statusForm, status: e.target.value })}>
                 <option value="active">Good standing</option>
                 <option value="probation">Probation</option>
-                <option value="inactive">Inactive (hidden from students)</option>
+                <option value="inactive">Archived (hidden from students, history kept)</option>
               </Select>
             )}
           </Field>
